@@ -51,7 +51,7 @@ class User implements UserInterface
     private $articles;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\comment", mappedBy="user")
+     * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="user")
      */
     private $comments;
 
@@ -202,7 +202,7 @@ class User implements UserInterface
         return $this->comments;
     }
 
-    public function addComment(comment $comment): self
+    public function addComment(Comment $comment): self
     {
         if (!$this->comments->contains($comment)) {
             $this->comments[] = $comment;
@@ -212,7 +212,7 @@ class User implements UserInterface
         return $this;
     }
 
-    public function removeComment(comment $comment): self
+    public function removeComment(Comment $comment): self
     {
         if ($this->comments->contains($comment)) {
             $this->comments->removeElement($comment);
