@@ -2,12 +2,16 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use Cocur\Slugify\Slugify;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\Collection;
+// use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\ArticleRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Article
 {
@@ -20,6 +24,8 @@ class Article
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(message="Le titre est obligatoire")
+     * @Assert\Length(min=2, minMessage="Il faut un minimu de 3 caractères")
      */
     private $title;
 
@@ -30,6 +36,7 @@ class Article
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank()
      */
     private $image;
 
@@ -55,6 +62,7 @@ class Article
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="article")
+     * @ORM\OrderBy({"createdAt"="DESC"})
      */
     private $comments;
 
@@ -67,6 +75,36 @@ class Article
     public function __construct()
     {
         $this->comments = new ArrayCollection();
+    }
+
+    /**
+     * @ORM\PrePersist
+     */
+    public function onCreate()
+    {
+        // Si la date de creation est vide
+        if (empty($this->createdAt)) {
+            $this->createdAt = new \DateTime();
+        }
+        // Si la date de modification est vide
+        if (empty($this->updatedAt)) {
+            $this->updatedAt = $this->createdAt;
+        }
+
+        // Si le slug est vide, on le calcule avec Slugify
+        if (empty($this->slug)) {
+            $slugify = new Slugify();
+            $this->slug = $slugify->slugify($this->title);
+        }
+    }
+
+    /**
+     * @ORM\PreUpdate
+     */
+    public function onUpdate()
+    {
+        // A chaque update, je mets a jour la date de modification
+        $this->updatedAt = new \DateTime();
     }
 
     public function getId(): ?int
@@ -159,7 +197,7 @@ class Article
     }
 
     /**
-     * @return Collection|comment[]
+     * @return Collection|Comment[]
      */
     public function getComments(): Collection
     {

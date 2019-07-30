@@ -10,12 +10,25 @@ security:
             entity:
                 class: App\Entity\User
                 property: email
+    
+    # role_hierarchy:
+    #     ROLE_ADMIN: [ROLE_MODERATEUR, ROLE_REDACTEUR, ROLE_ALLOWED_TO_SWITCH]
+    #     ROLE_REDACTEUR: ROLE_MODERATEUR
+    #     ROLE_MODERATEUR: ROLE_USER
+
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
         main:
             anonymous: true
+
+            form_login:
+                login_path: security_login
+                check_path: security_login
+
+            logout:
+                path: security_logout
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#firewalls-authentication

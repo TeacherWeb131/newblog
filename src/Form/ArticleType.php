@@ -2,9 +2,11 @@
 
 namespace App\Form;
 
+use App\Entity\User;
 use App\Entity\Article;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ArticleType extends AbstractType
@@ -16,10 +18,14 @@ class ArticleType extends AbstractType
             ->add('slug')
             ->add('image')
             ->add('content')
-            ->add('createdAt')
-            ->add('publishedAt')
-            ->add('updatedAt')
-            ->add('user')
+            // ->add('createdAt')
+            // ->add('publishedAt')
+            // ->add('updatedAt')
+            ->add('user', EntityType::class, [
+                'label' => "Utilisateur",
+                'class' => User::class,
+                'choice_label' => 'email'
+            ])
         ;
     }
 
